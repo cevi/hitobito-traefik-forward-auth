@@ -1,4 +1,4 @@
-# Supports for Access Limitation via Hitobito Groups
+# Support for Access Limitation via Hitobito Groups
 
 This fork extends the forwardauth with support for access control via Hitobito Groups:
 You can allow certain groups to access the application, configurable via the `GROUP_IDS` environment variable.
