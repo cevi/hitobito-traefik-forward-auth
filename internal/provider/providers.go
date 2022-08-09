@@ -12,6 +12,7 @@ type Providers struct {
 	Google       Google       `group:"Google Provider" namespace:"google" env-namespace:"GOOGLE"`
 	OIDC         OIDC         `group:"OIDC Provider" namespace:"oidc" env-namespace:"OIDC"`
 	GenericOAuth GenericOAuth `group:"Generic OAuth2 Provider" namespace:"generic-oauth" env-namespace:"GENERIC_OAUTH"`
+	Hitobito     Hitobito     `group:"Hitobito Provider" namespace:"hitobito-oauth" env-namespace:"HITOBITO_OAUTH"`
 }
 
 // Provider is used to authenticate users
@@ -30,6 +31,11 @@ type token struct {
 // User is the authenticated user
 type User struct {
 	Email string `json:"email"`
+
+	Roles []struct {
+		GroupID   int    `json:"group_id"`
+		GroupName string `json:"group_name"`
+	} `json:"roles"`
 }
 
 // OAuthProvider is a provider using the oauth2 library

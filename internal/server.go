@@ -1,12 +1,12 @@
 package tfa
 
 import (
-	"net/http"
-	"net/url"
-
 	"github.com/containous/traefik/v2/pkg/rules"
 	"github.com/sirupsen/logrus"
 	"github.com/thomseddon/traefik-forward-auth/internal/provider"
+	"net/http"
+	"net/url"
+	"strconv"
 )
 
 // Server contains router and handler methods
@@ -106,7 +106,7 @@ func (s *Server) AuthHandler(providerName, rule string) http.HandlerFunc {
 
 		// Validate user
 		valid := ValidateEmail(email, rule)
-		if !valid {
+		if !valid && !config.SkipMailVerification {
 			logger.WithField("email", email).Warn("Invalid email")
 			http.Error(w, "Not authorized", 401)
 			return
@@ -183,6 +183,39 @@ func (s *Server) AuthCallbackHandler() http.HandlerFunc {
 			logger.WithField("error", err).Error("Error getting user")
 			http.Error(w, "Service unavailable", 503)
 			return
+		}
+
+		// Verify GroupID
+		if config.SkipMailVerification {
+
+			logger.Info("Validate Group ID instead of Mail Address")
+			logger.Info(user)
+
+			validGroup := false
+
+			// Check if any role of user.Role has a GroupID that is in the array
+			// of valid GroupIDs passed via config.GroupIDs
+		rolesLoop:
+			for _, role := range user.Roles {
+				for _, groupID := range config.GroupIDs {
+
+					id, err := strconv.Atoi(groupID)
+					if err == nil && role.GroupID == id {
+						logger.Info("User is part of valid group with ID={}", groupID)
+						validGroup = true
+						break rolesLoop
+					}
+
+				}
+				logger.Info("The id "+string(rune(role.GroupID))+" is not a valid group ID, not in ", config.GroupIDs)
+			}
+
+			if !validGroup {
+				logger.Warn("Not in a valid Group!")
+				http.Error(w, "Not in a valid Group!", 401)
+				return
+			}
+
 		}
 
 		// Generate cookie

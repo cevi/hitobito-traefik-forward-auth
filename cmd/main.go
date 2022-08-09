@@ -9,6 +9,7 @@ import (
 
 // Main
 func main() {
+
 	// Parse options
 	config := internal.NewGlobalConfig()
 
