@@ -15,7 +15,7 @@ services:
       AUTH_HOST: auth.cevi.tools
       COOKIE_DOMAIN: cevi.tools
       DEFAULT_PROVIDER: hitobito-oauth
-      DOMAIN: zh11.ch
+      DOMAIN: cevi.tools
       LOG_LEVEL: debug
 
       # Hitobito OAuth Settings
